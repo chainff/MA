@@ -115,14 +115,15 @@ class TradingApp:
 
 
     def show_help(self):
-        help_message = """操作指南:
-    1. 输入初始资金。
-    2. 输入买卖金额。
-    3. 输入股票代码。
-    4. 设置短期和长期移动平均窗口。
-    5. 点击'Buy'或'Sell'执行交易。
+        help_message = """Operating Instructions
+    1. Enter initial funds.
+    2. Enter the buy and sell amount.
+    3. Enter the stock code.
+    4. Click 'init Parameters'.
+    5. Set the short-term and long-term moving average windows.
+    6. Click 'Buy' or 'Sell' to execute the trade.
         """
-        tk.messagebox.showinfo("帮助", help_message)
+        tk.messagebox.showinfo("Help", help_message)
 
     def log_message(self, message):
         self.log_text.configure(state='normal')
