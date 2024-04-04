@@ -32,6 +32,7 @@ class TradingApp:
             'trade_history': [],
         }
         self.ticker = 'APLE'
+        
 
         self.default_short_window = 40
         self.default_long_window = 100
@@ -60,7 +61,7 @@ class TradingApp:
         # self.root.grid_columnconfigure(1, weight=1)
         # self.root.grid_columnconfigure(2, weight=1)
 
-        self.init_cash_label = ttk.Label(self.root, text="init cash")
+        self.init_cash_label = ttk.Label(self.root, text="available credit")
         self.init_cash_label.grid(row=1, column=0, padx=10, pady=10, sticky='w')
         self.init_cash_entry = ttk.Entry(self.root, textvariable=self.init_cash)
         self.init_cash_entry.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
@@ -119,9 +120,8 @@ class TradingApp:
     1. Enter initial funds.
     2. Enter the buy and sell amount.
     3. Enter the stock code.
-    4. Click 'init Parameters'.
-    5. Set the short-term and long-term moving average windows.
-    6. Click 'Buy' or 'Sell' to execute the trade.
+    4. Set the short-term and long-term moving average windows.
+    5. Click 'Buy' or 'Sell' to execute the trade.
         """
         tk.messagebox.showinfo("Help", help_message)
 
