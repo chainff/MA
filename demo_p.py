@@ -11,11 +11,9 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import tkinter.messagebox as tkMessageBox
 
-
 # ticker = 'APLE'
 interval = '5m'
 refresh_rate = 5
-
 
 class TradingApp:
     def __init__(self, root):
@@ -31,8 +29,13 @@ class TradingApp:
             "return": 0.0,
             'trade_history': [],
         }
-        self.ticker = 'APLE'
-        
+        #self.ticker = 'APLE'
+        stock_codes = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'Meta']
+        self.ticker = stock_codes[0]  # 假设stock_codes不为空
+        # 创建股票代码的下拉列表
+        self.stock_code_var = tk.StringVar(value=stock_codes[0])
+        self.stock_code_combobox = ttk.Combobox(root, textvariable=self.stock_code_var, values=stock_codes, state="readonly")
+
 
         self.default_short_window = 40
         self.default_long_window = 100
@@ -74,8 +77,12 @@ class TradingApp:
 
         self.stock_label = ttk.Label(self.root, text="stock")
         self.stock_label.grid(row=3, column=0, padx=10, pady=10, sticky='w')
-        self.stock_entry = ttk.Entry(self.root, textvariable=self.stock_pool)
-        self.stock_entry.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
+        # self.stock_entry = ttk.Entry(self.root, textvariable=self.stock_pool)
+        # self.stock_entry.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
+
+        self.stock_code_combobox.grid(row=3, column=1, padx=10, pady=10, sticky='ew')
+        # 绑定下拉列表选择事件
+        self.stock_code_combobox.bind('<<ComboboxSelected>>', self.on_stock_selected)
 
         # Short MA Window
         self.short_window_label = ttk.Label(self.root, text="Short MA Window:")
@@ -91,7 +98,7 @@ class TradingApp:
 
         # Update Parameters button
         self.update_button = ttk.Button(self.root, text="init Parameters", command=self.update_parameters)
-        self.update_button.grid(row=10, column=0,  padx=10, pady=10, sticky='ew')
+        self.update_button.grid(row=10, column=0, padx=10, pady=10, sticky='ew')
 
         # Define the buttons with their commands and place them on the grid
         self.buy_button = ttk.Button(self.root, text="Buy", command=self.buy)
@@ -113,13 +120,17 @@ class TradingApp:
         self.log_message(f"{datetime.now()}: default_short_window = 40, default_long_window = 100")
         self.log_message(f"{datetime.now()}: Start TradingApp.")
 
-
+    def on_stock_selected(self, event):
+        # 当用户选择一个股票代码时调用
+        selected_stock = self.stock_code_var.get()
+        #tkMessageBox.showinfo("Selected Stock", f"You selected {selected_stock}")
+        # 这里可以添加更多的代码来处理选中的股票代码，比如加载股票数据等
 
     def show_help(self):
         help_message = """Operating Instructions
     1. Enter initial funds.
     2. Enter the buy and sell amount.
-    3. Enter the stock code.
+    3. Choose the stock code.
     4. Set the short-term and long-term moving average windows.
     5. Click 'Buy' or 'Sell' to execute the trade.
         """
@@ -180,7 +191,7 @@ class TradingApp:
             self.long_window.set(long_window)
 
             # 更新股票代码
-            new_ticker = self.stock_entry.get().strip().upper()  # 去除前后空格并转大写
+            new_ticker = self.stock_code_var.get().strip().upper() # 去除前后空格并转大写
             if new_ticker != self.ticker and new_ticker != "":
                 self.ticker = new_ticker
                 self.stock_pool.set(new_ticker)
