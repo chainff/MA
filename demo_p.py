@@ -186,13 +186,14 @@ class TradingApp:
         available_amount = self.portfolio['positions'].get(self.ticker, {}).get('amount', 0)
         if available_amount < amount:
             self.log_message(f"{datetime.now()}: Not enough shares of {self.ticker} to sell.")
-        amount = min(available_amount, amount)
-        self.portfolio['positions'][self.ticker]['amount'] -= amount
-        self.portfolio['cash'] += amount * price
-        self.log_message(
-            f"{datetime.now()}: Executing SELL trade. amount = {amount} price = {price} cash = {self.portfolio['cash']}")
+        else:
+            self.portfolio['positions'][self.ticker]['amount'] -= amount
+            if self.portfolio['positions'][self.ticker]['amount'] == 0:
+                del self.portfolio['positions'][self.ticker]  # 删除空的持仓记录
+            self.portfolio['cash'] += amount * price
+            self.log_message(
+                f"{datetime.now()}: Executing SELL trade. amount = {amount} price = {price} cash = {self.portfolio['cash']}")
 
-    # Inside the TradingApp class:
 
     def update_risk_management(self):
         # Convert the StringVar values to float and update the portfolio dictionary
