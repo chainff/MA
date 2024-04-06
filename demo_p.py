@@ -16,6 +16,29 @@ interval = '5m'
 refresh_rate = 5
 
 class TradingApp:
+
+    def validate_integer(self, input):
+        """Validate that the input is an integer."""
+        if input == "":
+            return True
+        try:
+            int(input)
+            return True
+        except ValueError:
+            tkMessageBox.showwarning("Warning", "Incorrect input. Please enter integer.")
+            return False
+
+    def validate_float(self, input):
+        """Validate that the input is a float. Allows negative values."""
+        if input in ["", "-", "+"]:
+            return True
+        try:
+            float(input)
+            return True
+        except ValueError:
+            tkMessageBox.showwarning("Warning", "Incorrect input. Please enter numbers.")
+            return False
+
     def __init__(self, root):
         self.root = root
         self.root.title("Trading Bot")
@@ -37,7 +60,9 @@ class TradingApp:
         self.stock_code_combobox = ttk.Combobox(root, textvariable=self.stock_code_var, values=stock_codes, state="readonly")
 
 #new
-        # Inside TradingApp.__init__ method:
+        # Convert validation functions to tkinter validate commands
+        self.validate_integer_cmd = root.register(self.validate_integer)
+        self.validate_float_cmd = root.register(self.validate_float)
 
         # Add fields for risk management strategy
         self.stop_loss_var = tk.DoubleVar(value=-0.05)  # Default stop loss value
@@ -45,12 +70,14 @@ class TradingApp:
 
         self.stop_loss_label = ttk.Label(self.root, text="Stop Loss (%):")
         self.stop_loss_label.grid(row=5, column=0, padx=10, pady=10, sticky='w')
-        self.stop_loss_entry = ttk.Entry(self.root, textvariable=self.stop_loss_var)
+        self.stop_loss_entry = ttk.Entry(self.root, textvariable=self.stop_loss_var, validate="key",
+                                         validatecommand=(self.validate_float_cmd, '%P'))
         self.stop_loss_entry.grid(row=5, column=1, padx=10, pady=10, sticky='ew')
 
         self.take_profit_label = ttk.Label(self.root, text="Take Profit (%):")
         self.take_profit_label.grid(row=6, column=0, padx=10, pady=10, sticky='w')
-        self.take_profit_entry = ttk.Entry(self.root, textvariable=self.take_profit_var)
+        self.take_profit_entry = ttk.Entry(self.root, textvariable=self.take_profit_var, validate="key",
+                                           validatecommand=(self.validate_float_cmd, '%P'))
         self.take_profit_entry.grid(row=6, column=1, padx=10, pady=10, sticky='ew')
 
 
@@ -85,13 +112,15 @@ class TradingApp:
 
         self.init_cash_label = ttk.Label(self.root, text="available credit")
         self.init_cash_label.grid(row=1, column=0, padx=10, pady=10, sticky='w')
-        self.init_cash_entry = ttk.Entry(self.root, textvariable=self.init_cash)
+        self.init_cash_entry = ttk.Entry(self.root, textvariable=self.init_cash, validate="key",
+                                         validatecommand=(self.validate_integer_cmd, '%P'))
         self.init_cash_entry.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
 
         # Short MA Window
         self.amount_label = ttk.Label(self.root, text="buy or sell amount")
         self.amount_label.grid(row=2, column=0, padx=10, pady=10, sticky='w')
-        self.amount_entry = ttk.Entry(self.root, textvariable=self.trade_amount)
+        self.amount_entry = ttk.Entry(self.root, textvariable=self.trade_amount, validate="key",
+                                      validatecommand=(self.validate_integer_cmd, '%P'))
         self.amount_entry.grid(row=2, column=1, padx=10, pady=10, sticky='ew')
 
         self.stock_label = ttk.Label(self.root, text="stock")
@@ -106,13 +135,15 @@ class TradingApp:
         # Short MA Window
         self.short_window_label = ttk.Label(self.root, text="Short Moving Average Window(Please enter number):")
         self.short_window_label.grid(row=7, column=0, padx=10, pady=10, sticky='w')
-        self.short_window_entry = ttk.Entry(self.root, textvariable=self.short_window)
+        self.short_window_entry = ttk.Entry(self.root, textvariable=self.short_window, validate="key",
+                                            validatecommand=(self.validate_integer_cmd, '%P'))
         self.short_window_entry.grid(row=7, column=1, padx=10, pady=10, sticky='ew')
 
         # Long MA Window
         self.long_window_label = ttk.Label(self.root, text="Long Moving Average Window(Please enter number):")
         self.long_window_label.grid(row=8, column=0, padx=10, pady=10, sticky='w')
-        self.long_window_entry = ttk.Entry(self.root, textvariable=self.long_window)
+        self.long_window_entry = ttk.Entry(self.root, textvariable=self.long_window, validate="key",
+                                           validatecommand=(self.validate_integer_cmd, '%P'))
         self.long_window_entry.grid(row=8, column=1, padx=10, pady=10, sticky='ew')
 
         # Update Parameters button
@@ -317,8 +348,6 @@ def generate_signals(data):
     data['Signal'] = np.where(data['Short_MA'] > data['Long_MA'], 1, 0)
     data['Position'] = data['Signal'].diff()
     return data
-
-
 
 
 if __name__ == "__main__":
