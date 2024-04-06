@@ -162,7 +162,7 @@ class TradingApp:
 
     def buy(self, price=None):
         amount = self.trade_amount.get()
-        self.ticker = self.stock_entry.get()
+        self.ticker = self.stock_code_var.get()
         if price is None:
             price = get_last_price(self.ticker)
         available_cash = self.portfolio['cash']
@@ -170,13 +170,17 @@ class TradingApp:
             self.log_message(f"{datetime.now()}: Not enough cash to buy {amount} shares of {self.ticker}.")
         amount = min(available_cash // price // 100 * 100, amount)
         self.portfolio['cash'] -= amount * price
-        self.portfolio['positions'][self.ticker] = {'amount': amount, 'price': price}
+        if self.ticker not in self.portfolio['positions']:
+            self.portfolio['positions'][self.ticker] = {'amount': 0, 'price': 0}
+        self.portfolio['positions'][self.ticker]['amount'] += amount
+        self.portfolio['positions'][self.ticker]['price'] = price
         self.log_message(
             f"{datetime.now()}: Executing BUY trade. amount = {amount} price = {price} cash = {self.portfolio['cash']}")
 
+
     def sell(self, price=None):
         amount = self.trade_amount.get()
-        self.ticker = self.stock_entry.get()
+        self.ticker = self.stock_code_var.get()
         if price is None:
             price = get_last_price(self.ticker)
         available_amount = self.portfolio['positions'].get(self.ticker, {}).get('amount', 0)
